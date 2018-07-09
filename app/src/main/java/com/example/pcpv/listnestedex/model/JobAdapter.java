@@ -1,5 +1,6 @@
 package com.example.pcpv.listnestedex.model;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -12,6 +13,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.pcpv.listnestedex.R;
 
 import java.util.List;
@@ -70,6 +73,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         protected ImageView imgChecked;
 
         private Job job;
+
         JobViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -98,15 +102,23 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
         }
 
         @OnClick(R.id.job_item_linear_layout)
-        protected  void onClickItem(){
+        protected void onClickItem() {
             job.setChecked(!job.isChecked());
-            imgChecked.setImageDrawable(context
-                    .getResources()
-                    .getDrawable(job.isChecked()
-                            ? R.drawable.ic_checked
-                            : R.drawable.ic_unchecked
-                    )
-            );
+            YoYo.with(Techniques.BounceIn)
+                    .onStart(new YoYo.AnimatorCallback() {
+                        @Override
+                        public void call(Animator animator) {
+                            imgChecked.setImageDrawable(context
+                                    .getResources()
+                                    .getDrawable(job.isChecked()
+                                            ? R.drawable.ic_checked
+                                            : R.drawable.ic_unchecked
+                                    )
+                            );
+                        }
+                    })
+                    .duration(500)
+                    .playOn(imgChecked);
         }
     }
 }

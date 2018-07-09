@@ -29,6 +29,7 @@
                 android:textStyle="bold" />
 
             <ImageView
+                android:id="@+id/job_list_item_ic_title"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center"

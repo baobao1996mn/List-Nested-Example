@@ -1,5 +1,6 @@
 package com.example.pcpv.listnestedex.model;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,8 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.example.pcpv.listnestedex.R;
 
 import java.util.List;
@@ -46,6 +50,8 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.JobsViewHolder
     }
 
     class JobsViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.job_list_item_ic_title)
+        protected ImageView icTitle;
         @BindView(R.id.job_list_item_txt_title)
         protected TextView txtTitle;
         @BindView(R.id.job_list_item_recycler_view)
@@ -59,7 +65,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.JobsViewHolder
         }
 
         @SuppressLint("CheckResult")
-        void bindView(Jobs jobs) {
+        void bindView(final Jobs jobs) {
             this.jobs = jobs;
             if (jobs.isExpanded()) {
                 this.adapter = new JobAdapter(context, jobs.getJobs());
@@ -68,13 +74,51 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.JobsViewHolder
                 this.recyclerView.setAdapter(adapter);
             }
             this.txtTitle.setText(jobs.getTitle());
-            this.recyclerView.setVisibility(jobs.isExpanded() ? View.VISIBLE : View.GONE);
+
+            icTitle.setImageResource(jobs.isExpanded()
+                    ?R.mipmap.ic_up
+                    :  R.mipmap.ic_down);
+
+            YoYo.with(jobs.isExpanded()
+                    ? Techniques.SlideInDown
+                    : Techniques.SlideOutUp)
+                    .duration(700)
+                    .onStart(new YoYo.AnimatorCallback() {
+                        @Override
+                        public void call(Animator animator) {
+                            if (jobs.isExpanded()) {
+                                recyclerView.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    })
+                    .onEnd(new YoYo.AnimatorCallback() {
+                        @Override
+                        public void call(Animator animator) {
+                            if (!jobs.isExpanded()) {
+                                recyclerView.setVisibility(View.GONE);
+                            }
+                        }
+                    })
+                    .playOn(recyclerView);
         }
 
         @OnClick(R.id.job_list_item_linear_layout)
         protected void onClickTitle() {
             jobs.setExpanded(!jobs.isExpanded());
-            notifyDataSetChanged();
+
+            YoYo.with(Techniques.RotateIn)
+                    .duration(700)
+                    .onEnd(new YoYo.AnimatorCallback() {
+                        @Override
+                        public void call(Animator animator) {
+                            icTitle.setImageResource(jobs.isExpanded()
+                                    ?R.mipmap.ic_up
+                                    :  R.mipmap.ic_down);
+                        }
+                    })
+                    .playOn(icTitle);
+
+            notifyItemChanged(getAdapterPosition());
         }
 
     }

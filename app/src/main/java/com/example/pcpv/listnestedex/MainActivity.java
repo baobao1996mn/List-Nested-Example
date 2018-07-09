@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements IJobView {
         service = retrofit.create(IGitHub.class);
 
         jobsList = new ArrayList<>();
-        keys = new String[]{
+        keys = new String[]{"React Native",
                 "Java", "Swift", "Angular", "Python", "Ruby", "Dart", "Kotlin"};
 
         for (String key : keys) {
